@@ -5,6 +5,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/martinsirbe/prometheus-graphite-demo/internal/mocks"
+	"github.com/martinsirbe/prometheus-graphite-demo/internal/service"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )
@@ -13,7 +14,7 @@ type testSuite struct {
 	mockController *gomock.Controller
 	mockedStorage  *mocks.MockStorage
 
-	ll *LogicLayer
+	ll *service.LogicLayer
 }
 
 func TestSuccessfullyCalledInsert(t *testing.T) {
@@ -48,7 +49,7 @@ func setupTest(t *testing.T) *testSuite {
 	mockController := gomock.NewController(t)
 	mockedStorage := mocks.NewMockStorage(mockController)
 
-	ll := NewLogicLayer(mockedStorage)
+	ll := service.NewLogicLayer(mockedStorage)
 
 	return &testSuite{
 		mockController: mockController,
