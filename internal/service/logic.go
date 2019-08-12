@@ -8,7 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-//go:generate mockgen -package=mocks -destination=../mocks/storage.go github.com/martinsirbe/prometheus-graphite-demo/internal/service Storage
+//go:generate mockgen -package=mocks -destination=../mocks/storage.go github.com/martinsirbe/prometheus-demo/internal/service Storage
 
 // Storage dummy storage interface used for demo
 type Storage interface {

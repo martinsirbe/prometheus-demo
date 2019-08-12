@@ -1,4 +1,4 @@
-module github.com/martinsirbe/prometheus-graphite-demo
+module github.com/martinsirbe/prometheus-demo
 
 go 1.12
 

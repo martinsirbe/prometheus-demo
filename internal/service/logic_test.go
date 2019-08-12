@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/martinsirbe/prometheus-graphite-demo/internal/mocks"
-	"github.com/martinsirbe/prometheus-graphite-demo/internal/service"
+	"github.com/martinsirbe/prometheus-demo/internal/mocks"
+	"github.com/martinsirbe/prometheus-demo/internal/service"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )

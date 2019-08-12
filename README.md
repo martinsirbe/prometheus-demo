@@ -1,7 +1,6 @@
-# Prometheus + Graphite Bridge Demo
+# Prometheus Demo
 
-A simple demo project which demonstrates how to instrument Go service using Prometheus and additionally 
-to push metrics to Graphite using Prometheus Graphite Bridge.  
+A simple demo project which demonstrates how to instrument Go service using Prometheus.  
 
 ## Requirements
 * Running Prometheus on minikube Kubernetes cluster - [prometheus-grafana-demo](https://github.com/martinsirbe/prometheus-grafana-demo).

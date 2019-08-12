@@ -7,8 +7,8 @@ import (
 	"time"
 
 	cli "github.com/jawher/mow.cli"
-	"github.com/martinsirbe/prometheus-graphite-demo/internal/db/postgres"
-	"github.com/martinsirbe/prometheus-graphite-demo/internal/service"
+	"github.com/martinsirbe/prometheus-demo/internal/db/postgres"
+	"github.com/martinsirbe/prometheus-demo/internal/service"
 	"github.com/prometheus/client_golang/prometheus/graphite"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
@@ -16,9 +16,8 @@ import (
 )
 
 const (
-	appName        = "prometheus-graphite-demo"
-	appDescription = "An example app which exposes Prometheus metrics on /metrics endpoint and also sends metrics " +
-		"to Graphite using Prometheus Graphite Bridge."
+	appName        = "prometheus-demo"
+	appDescription = "An example app which exposes Prometheus metrics on /metrics endpoint."
 )
 
 func main() {
