@@ -37,8 +37,5 @@ spec:
         - name: prometheus-demo
           image: martinsirbe/prometheus-demo:latest
           imagePullPolicy: IfNotPresent
-          env:
-            - name: CARBON_URL
-              value: "graphite:2003"
           ports:
             - containerPort: 1337

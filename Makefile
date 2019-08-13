@@ -10,10 +10,6 @@ start:
 	@echo "\033[0;32m» Open http://localhost:1337/metrics in your browser to view metrics.\033[0;39m"
 	@go run cmd/prometheus-demo/main.go
 
-.PHONY: test
-test:
-	@go test -v --cover ./...
-
 .PHONY: lint
 lint:
 	@docker run --rm -w /src/github.com/martinsirbe/$(PROJECT_NAME) \

@@ -2,7 +2,7 @@ package service
 
 import (
 	"fmt"
-	"time"
+	"sync"
 
 	"github.com/gofrs/uuid"
 	"github.com/sirupsen/logrus"
@@ -28,31 +28,30 @@ func NewLogicLayer(client Storage) *LogicLayer {
 
 // Run runs demo
 func (ll *LogicLayer) Run() error {
-	errs := make(chan error, 1)
+	for {
+		var (
+			maxThreads = 5
+			wg         sync.WaitGroup
+		)
 
-	go func() {
-		for {
-			if err := ll.client.Insert(fmt.Sprintf("%v", uuid.Must(uuid.NewV4()))); err != nil {
-				logrus.WithError(err).Error("stopped inserting stuff")
-				errs <- err
-			}
-			time.Sleep(time.Second * 1)
+		wg.Add(maxThreads)
+		for i := 0; i < maxThreads; i++ {
+			go func() {
+				if err := ll.client.Insert(id()); err != nil {
+					logrus.WithError(err).Error("failed to insert")
+				}
+
+				if err := ll.client.Delete(id()); err != nil {
+					logrus.WithError(err).Error("failed to delete")
+				}
+
+				wg.Done()
+			}()
 		}
-	}()
-
-	go func() {
-		for {
-			if err := ll.client.Delete(fmt.Sprintf("%v", uuid.Must(uuid.NewV4()))); err != nil {
-				logrus.WithError(err).Error("stopped deleting stuff")
-				errs <- err
-			}
-			time.Sleep(time.Second * 5)
-		}
-	}()
-
-	if err, open := <-errs; open {
-		return err
+		wg.Wait()
 	}
+}
 
-	return nil
+func id() string {
+	return fmt.Sprintf("%v", uuid.Must(uuid.NewV4()))
 }
