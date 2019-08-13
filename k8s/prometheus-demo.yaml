@@ -36,6 +36,11 @@ spec:
       containers:
         - name: prometheus-demo
           image: martinsirbe/prometheus-demo:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
+          env:
+            - name: DB_INSERT_SEC_RANGE
+              value: "10:30"
+            - name: DB_DELETE_SEC_RANGE
+              value: "3:20"
           ports:
             - containerPort: 1337

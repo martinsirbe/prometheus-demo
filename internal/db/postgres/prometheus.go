@@ -3,16 +3,20 @@ package postgres
 import (
 	"fmt"
 	"math/rand"
+	"strconv"
+	"strings"
 	"time"
 
+	"github.com/pkg/errors"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
 type Metrics struct {
-	TimerHistogram prometheus.Histogram
-	TimeSummary    prometheus.Summary
-	TimerGauge     prometheus.Gauge
+	TimerHistogram           prometheus.Histogram
+	TimeSummary              prometheus.Summary
+	TimerGauge               prometheus.Gauge
+	RangeMinSec, RangeMaxSec int
 }
 
 // InstrumentedClientPrometheus instrumented postgres client
@@ -23,7 +27,10 @@ type InstrumentedClientPrometheus struct {
 }
 
 // NewInstrumentedClientPrometheus initialises a new fake postgres client
-func NewInstrumentedClientPrometheus() *InstrumentedClientPrometheus {
+func NewInstrumentedClientPrometheus(insertRange, deleteRange string) *InstrumentedClientPrometheus {
+	iMin, iMax := getRange(insertRange)
+	dMin, dMax := getRange(deleteRange)
+
 	return &InstrumentedClientPrometheus{
 		counter: promauto.NewCounterVec(prometheus.CounterOpts{
 			Name: "actions_total",
@@ -41,6 +48,8 @@ func NewInstrumentedClientPrometheus() *InstrumentedClientPrometheus {
 			TimerGauge: promauto.NewGauge(prometheus.GaugeOpts{
 				Name: "db_insert_gauge",
 			}),
+			RangeMinSec: iMin,
+			RangeMaxSec: iMax,
 		},
 		deleteMetrics: Metrics{
 			TimerHistogram: promauto.NewHistogram(prometheus.HistogramOpts{
@@ -52,6 +61,8 @@ func NewInstrumentedClientPrometheus() *InstrumentedClientPrometheus {
 			TimerGauge: promauto.NewGauge(prometheus.GaugeOpts{
 				Name: "db_delete_gauge",
 			}),
+			RangeMinSec: dMin,
+			RangeMaxSec: dMax,
 		},
 	}
 }
@@ -66,7 +77,7 @@ func (c *InstrumentedClientPrometheus) Insert(o string) error {
 	defer sumTimer.ObserveDuration()
 	defer gaugeTimer.ObserveDuration()
 
-	sleep(30, 360)
+	sleep(c.insertMetrics.RangeMinSec, c.insertMetrics.RangeMaxSec)
 
 	c.counter.WithLabelValues("insert").Add(1)
 
@@ -84,7 +95,7 @@ func (c *InstrumentedClientPrometheus) Delete(o string) error {
 	defer sumTimer.ObserveDuration()
 	defer gaugeTimer.ObserveDuration()
 
-	sleep(5, 60)
+	sleep(c.deleteMetrics.RangeMinSec, c.deleteMetrics.RangeMaxSec)
 
 	c.counter.WithLabelValues("delete").Add(1)
 
@@ -96,4 +107,19 @@ func sleep(minSec, maxSec int) {
 	rand.Seed(time.Now().UnixNano())
 	sleepSec := rand.Intn(maxSec-minSec) + minSec
 	time.Sleep(time.Duration(sleepSec) * time.Second)
+}
+
+func getRange(rangeString string) (int, int) {
+	r := strings.Split(rangeString, ":")
+	min, err := strconv.Atoi(r[0])
+	if err != nil {
+		panic(errors.Errorf("failed to obtain min range from range string, range string - %s", rangeString))
+	}
+
+	max, err := strconv.Atoi(r[1])
+	if err != nil {
+		panic(errors.Errorf("failed to obtain max range from range string, range string - %s", rangeString))
+	}
+
+	return min, max
 }

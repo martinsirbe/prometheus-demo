@@ -19,8 +19,23 @@ const (
 func main() {
 	app := cli.App(appName, appDescription)
 
+	ir := app.String(cli.StringOpt{
+		Name: "db-insert-sec-range",
+		Desc: "Range in seconds for the database insert action. Used to produce a random sleep interval " +
+			"on the action call. Format `min:max` where `30:360` will produce a sleep interval between 30 to 360 sec.",
+		EnvVar: "DB_INSERT_SEC_RANGE",
+		Value:  "30:360",
+	})
+	dr := app.String(cli.StringOpt{
+		Name: "db-delete-sec-range",
+		Desc: "Range in seconds for the database delete action. Used to produce a random sleep interval " +
+			"on the action call. Format `min:max` where `5:60` will produce a sleep interval between 5 to 60 sec.",
+		EnvVar: "DB_DELETE_SEC_RANGE",
+		Value:  "5:60",
+	})
+
 	app.Action = func() {
-		storageClient := postgres.NewInstrumentedClientPrometheus()
+		storageClient := postgres.NewInstrumentedClientPrometheus(*ir, *dr)
 		http.Handle("/metrics", promhttp.Handler())
 
 		// Example for other clients, such as Graphite, DataDog where the client post metrics.
