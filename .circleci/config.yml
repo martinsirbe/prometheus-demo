@@ -24,13 +24,16 @@ jobs:
             docker build \
               -t martinsirbe/prometheus-demo:$(git rev-parse --short $CIRCLE_SHA1) \
               -t martinsirbe/prometheus-demo:latest \
+              -t docker.pkg.github.com/martinsirbe/prometheus-demo/demo-app:latest \
               -f Dockerfile .
       - run:
-          name: Push the docker image to docker hub.
+          name: Push the docker image registries.
           command: |
             echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
             docker push martinsirbe/prometheus-demo:$(git rev-parse --short $CIRCLE_SHA1)
             docker push martinsirbe/prometheus-demo:latest
+            echo "$GITHUB_PKG_REG_TOKEN" | docker login docker.pkg.github.com -u "$GITHUB_USERNAME" --password-stdin
+            docker push docker.pkg.github.com/martinsirbe/prometheus-demo/demo-app:latest
 workflows:
   version: 2
   commit:
