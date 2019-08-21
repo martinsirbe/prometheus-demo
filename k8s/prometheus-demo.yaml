@@ -35,7 +35,7 @@ spec:
     spec:
       containers:
         - name: prometheus-demo
-          image: docker.pkg.github.com/martinsirbe/prometheus-demo/demo-app:latest
+          image: martinsirbe/prometheus-demo:latest
           imagePullPolicy: Always
           env:
             - name: DB_INSERT_SEC_RANGE
